@@ -1,5 +1,5 @@
 const express = require("express");
-const { getClient } = require("./groq/llama"); // GROQ SDK
+const { getClient } = require("./groq/llama"); 
 
 const genImage = require("./commands/genImage");
 const genSong = require("./commands/genSong");
@@ -16,34 +16,52 @@ app.get("/", (req, res) => {
 app.get("/api", async (req, res) => {
   const { type, input } = req.query;
 
-  if (!type || !input) return res.send(null);
+  if (!type || !input) {
+    return res.json({ success: false, type: null, result: null });
+  }
 
   try {
-    // ───── IMAGE GENERATION ─────────────────────────────
+    // ───────── IMAGE ─────────
     if (type === "image") {
       const url = await genImage(input);
-      return res.send(url);
+      return res.json({
+        success: true,
+        type: "image",
+        result: url || null
+      });
     }
 
-    // ───── SONG DOWNLOAD ───────────────────────────────
+    // ───────── SONG ─────────
     if (type === "song") {
       const url = await genSong(input);
-      return res.send(url);
+      return res.json({
+        success: true,
+        type: "song",
+        result: url || null
+      });
     }
 
-    // ───── VIDEO DOWNLOAD ──────────────────────────────
+    // ───────── VIDEO ─────────
     if (type === "video") {
       const url = await genVideo(input);
-      return res.send(url);
+      return res.json({
+        success: true,
+        type: "video",
+        result: url || null
+      });
     }
 
-    // ───── LYRICS ──────────────────────────────────────
+    // ───────── LYRICS ─────────
     if (type === "lyrics") {
       const lyrics = await genLyrics(input);
-      return res.send(lyrics);
+      return res.json({
+        success: true,
+        type: "lyrics",
+        result: lyrics || null
+      });
     }
 
-    // ───── CHAT (GROQ → openai/gpt-oss-20b) ─────────────
+    // ───────── CHAT ─────────
     if (type === "chat") {
       const client = getClient();
 
@@ -55,14 +73,18 @@ app.get("/api", async (req, res) => {
         ]
       });
 
-      return res.send(out.choices?.[0]?.message?.content || null);
+      return res.json({
+        success: true,
+        type: "chat",
+        result: out.choices?.[0]?.message?.content || null
+      });
     }
 
-    // Unknown type
-    return res.send(null);
+    // Unknown Type
+    return res.json({ success: false, type, result: null });
 
   } catch (err) {
-    return res.send(null);
+    return res.json({ success: false, type, result: null });
   }
 });
 
