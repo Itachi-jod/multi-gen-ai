@@ -1,5 +1,5 @@
 const express = require("express");
-const { getClient } = require("./openai");   // using openai.js now
+const { getClient } = require("./groq/llama"); // GROQ SDK
 
 const genImage = require("./commands/genImage");
 const genSong = require("./commands/genSong");
@@ -43,7 +43,7 @@ app.get("/api", async (req, res) => {
       return res.send(lyrics);
     }
 
-    // ───── CHAT (OpenAI GPT OSS 20B) ───────────────────
+    // ───── CHAT (GROQ → openai/gpt-oss-20b) ─────────────
     if (type === "chat") {
       const client = getClient();
 
