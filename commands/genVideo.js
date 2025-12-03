@@ -5,7 +5,7 @@ module.exports = async function genVideo(query) {
     const url = `https://dens-videojs.vercel.app/api/video?query=${encodeURIComponent(query)}`;
     const res = await axios.get(url);
 
-    return res.data?.results.mp4|| null;
+    return res.data?.result.mp4|| null;
   } catch (err) {
     return null;
   }
